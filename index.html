@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flexible List Formatter - Green Theme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Green Theme - Light Mode */
+      --bg: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* Light green shades */
+      --text: #1b5e20; /* Dark green for text */
+      --primary: #4caf50; /* Main green for actions */
+      --button-hover: #388e3c; /* Darker green for hover */
+      --card-bg: rgba(255, 255, 255, 0.98); /* Off-white for cards, or a very light green tint */
+      --focus-outline: #a5d6a7; /* Lighter green for focus */
+      --transition-speed: 0.3s;
+      --section-padding: 1rem 1.5rem;
+      --success-bg: #2e7d32; /* Darker success green */
+      --error-bg: #c62828;   /* Deep red for error */
+      --success-text: #e8f5e9;
+      --error-text: white;
+      --border-color: #a5d6a7; /* Light green border */
+    }
+
+    body.dark {
+      /* Green Theme - Dark Mode (Forest Theme) */
+    --bg: linear-gradient(135deg, #1b320f, #2e7d32);
+    --text: #e8f5e9;
+    --primary: #81c784;
+    --button-hover: #66bb6a;
+    --card-bg: rgb(54 151 61 / 92%);
+    --focus-outline: #66bb6a;
+    --border-color: #42ff4b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background-attachment: fixed;
+      background-size: cover;
+      transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 700;
+      color: var(--primary);
+    }
+     h3 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .dark-toggle {
+      text-align: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .dark-toggle button {
+      background: var(--primary);
+      color: var(--card-bg); /* Text color that contrasts with primary green */
+      border: none;
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.3s ease, transform 0.2s ease, color var(--transition-speed) ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    body.dark .dark-toggle button {
+        color: var(--text); /* Ensure contrast in dark mode */
+    }
+
+
+    .dark-toggle button:hover,
+    .dark-toggle button:focus {
+      background: var(--button-hover);
+      outline: none;
+      box-shadow: 0 0 8px var(--focus-outline);
+      transform: translateY(-1px);
+    }
+
+    .tool-container {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-grow: 1;
+      overflow: hidden;
+    }
+
+    .section {
+      flex: 1 1 320px;
+      background: var(--card-bg);
+      padding: var(--section-padding);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      min-width: 300px;
+      max-height: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: background var(--transition-speed) ease;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+      user-select: none;
+      color: var(--primary); /* Primary green for labels */
+      transition: color var(--transition-speed) ease;
+    }
+
+    textarea, .output-box {
+      flex-grow: 1;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg); /* Use body background for textareas */
+      color: var(--text);
+      font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+      resize: none;
+      min-height: 200px;
+      transition: border-color var(--transition-speed) ease, 
+                  box-shadow var(--transition-speed) ease,
+                  background var(--transition-speed) ease,
+                  color var(--transition-speed) ease;
+      overflow-y: auto;
+    }
+
+    textarea:focus, .output-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem var(--focus-outline);
+    }
+
+    fieldset.format-options {
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      margin-top: 1rem;
+      background: var(--card-bg);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      user-select: none;
+      transition: border-color var(--transition-speed) ease, background var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    fieldset.format-options legend {
+      font-weight: bold;
+      font-size: 1.1rem;
+      padding: 0 10px;
+      color: var(--primary);
+      text-shadow: none;
+      transition: color var(--transition-speed) ease;
+    }
+
+    fieldset.format-options label {
+      font-weight: 600;
+      margin-right: 0.5rem;
+      color: var(--text); /* Labels inside fieldset use main text color */
+    }
+    
+    fieldset.format-options .option-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    fieldset.format-options input[type="text"] {
+      width: 3rem;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: center;
+      border-radius: 5px;
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.5rem;
+      margin-right: 0.5rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      color: var(--primary); /* Input text color is primary green */
+      background-color: var(--bg); /* Background same as body for consistency */
+      transition: border-color var(--transition-speed) ease, color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+    }
+    
+    fieldset.format-options input[type="checkbox"] {
+        margin-right: 0.5rem;
+        accent-color: var(--primary); /* Styles the checkbox itself */
+        width: 16px;
+        height: 16px;
+        transition: accent-color var(--transition-speed) ease;
+    }
+    
+    fieldset.format-options input[type="text"]::placeholder {
+      color: var(--text);
+      opacity: 0.7;
+      font-weight: normal;
+    }
+
+    fieldset.format-options small {
+      color: var(--text);
+      opacity: 0.8;
+      font-size: 0.85rem;
+      font-weight: normal;
+      user-select: none;
+      margin-left: 0.25rem;
+    }
+
+    .buttons-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      justify-content: flex-start;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      min-width: 200px;
+      max-height: 100%;
+      flex-shrink: 0;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: background var(--transition-speed) ease;
+    }
+
+    .buttons-column button, .section button {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: var(--card-bg); /* Text color contrasting with primary green */
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      max-width: 220px;
+      transition: background 0.3s ease, transform 0.2s ease, color var(--transition-speed) ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+     body.dark .buttons-column button, body.dark .section button {
+        color: var(--text); /* Ensure contrast in dark mode */
+    }
+    
+    .section button {
+        width: auto;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .buttons-column button:hover,
+    .buttons-column button:focus,
+    .section button:hover,
+    .section button:focus {
+      background: var(--button-hover);
+      outline: none;
+      box-shadow: 0 0 8px var(--focus-outline);
+      transform: translateY(-1px);
+    }
+    
+    .buttons-column button.success-feedback {
+        background-color: var(--success-bg) !important; /* Ensure override */
+        color: var(--success-text) !important;
+    }
+    .buttons-column button.error-feedback {
+        background-color: var(--error-bg) !important; /* Ensure override */
+        color: var(--error-text) !important;
+    }
+
+    .export-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .export-buttons button {
+        min-width: 150px;
+    }
+
+    .summary {
+      text-align: center;
+      margin-top: 0.75rem;
+      font-weight: 600;
+      user-select: none;
+      font-size: 0.9rem;
+      color: var(--text);
+      opacity: 0.9;
+      transition: color var(--transition-speed) ease;
+    }
+
+    /* Tree styling */
+    #treeIconContainer {
+      margin-top: 1.5rem; /* Space above the tree */
+      text-align: center; 
+    }
+
+    #treeIconContainer svg {
+      width: 60px; 
+      height: 70px; 
+      fill: var(--primary); 
+      transition: fill var(--transition-speed) ease;
+    }
+
+    body.dark #treeIconContainer svg {
+      fill: var(--text); /* Light green/off-white in dark mode */
+    }
+
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text);
+      opacity: 0.7;
+      user-select: none;
+      flex-shrink: 0;
+      transition: color var(--transition-speed) ease;
+    }
+    
+    .clipboard-helper {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        opacity: 0;
+    }
+
+    @media (max-width: 900px) {
+      .tool-container {
+        flex-direction: column;
+        max-width: 95vw;
+      }
+      .buttons-column {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: none;
+        justify-content: center;
+        min-width: auto;
+        width: 100%;
+      }
+      .buttons-column button {
+        width: calc(50% - 0.5rem);
+        min-width: 140px;
+        font-size: 0.9rem;
+      }
+      #treeIconContainer {
+        width: 100%; /* Allow tree to be centered in the row flow */
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      #treeIconContainer svg {
+        width: 50px;
+        height: 60px;
+      }
+      .section {
+        min-height: 250px;
+      }
+      textarea, .output-box {
+        min-height: 180px;
+      }
+    }
+    @media (max-width: 600px) {
+        h1 { font-size: 1.8rem; }
+        .buttons-column button {
+             width: 100%; 
+        }
+        fieldset.format-options .option-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+        fieldset.format-options input[type="text"] {
+            width: 4rem;
+        }
+        fieldset.format-options label {
+            margin-right: 0;
+        }
+        .dark-toggle button {
+            width: 80%;
+            padding: 0.8rem;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div class="dark-toggle">
+    <button aria-pressed="false" aria-label="Toggle Theme Mode" id="darkToggleBtn">🌲 Go Green (Dark)</button>
+  </div>
+
+  <header class="header" role="banner">
+    <h1>Flexible List Formatter</h1>
+  </header>
+
+  <main class="tool-container" role="main">
+    <section class="section" aria-labelledby="inputLabel">
+      <label for="itemInput" id="inputLabel">Paste or Write your Input </label>
+      <textarea id="itemInput" aria-describedby="inputCountSummary" placeholder="Paste items here..."></textarea>
+      <div class="summary" id="inputCountSummary" aria-live="polite" aria-atomic="true">Total Input Items: 0</div>
+
+      <fieldset class="format-options" aria-label="Formatting Options">
+        <legend>Formatting Options</legend>
+        <div class="option-group">
+            <label for="quoteChar">Quote character:</label>
+            <input type="text" id="quoteChar" maxlength="1" size="1" placeholder="' or &quot;" aria-describedby="quoteHelp" />
+            <small id="quoteHelp">Leave empty for no quotes</small>
+        </div>
+        <div class="option-group">
+            <label for="delimiterChar">Delimiter:</label>
+            <input type="text" id="delimiterChar" maxlength="3" size="3" value="," aria-describedby="delimHelp" />
+            <small id="delimHelp">e.g., , or | or ;</small>
+        </div>
+        <div class="option-group">
+            <input type="checkbox" id="spaceAfterDelimiter" unchecked />
+            <label for="spaceAfterDelimiter" style="font-weight: normal; margin-bottom: 0;">Add space after delimiter</label>
+        </div>
+      </fieldset>
+
+      <div style="margin-top:1rem;">
+        <button id="clearInputBtn" aria-label="Clear input area">Clear Input</button>
+      </div>
+    </section>
+
+    <div class="buttons-column" role="region" aria-label="Action Buttons">
+      <button id="formatBtn" aria-label="Format items using selected options">Delim</button>
+      <button id="copyBtn" aria-label="Copy formatted output to clipboard">Copy Output</button>
+      <button id="clearOutputBtn" aria-label="Clear output area">Clear Output</button>
+      <div id="treeIconContainer" aria-hidden="true">
+        <svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 80 H35 V58 H25 V80 Z" />
+          <path d="M30 2 C5 22 -5 37 -5 47 C-5 57 5 67 30 67 C55 67 65 57 65 47 C65 37 55 22 30 2 Z" />
+        </svg>
+      </div>
+    </div>
+
+    <section class="section" aria-labelledby="outputLabel">
+      <label for="outputArea" id="outputLabel">Formatted Output</label>
+      <textarea readonly class="output-box" id="outputArea" aria-live="polite" aria-atomic="true">Output will appear here...</textarea>
+      <div class="summary" id="outputCountSummary">Total Output Items: 0</div>
+
+      <div class="export-buttons" aria-label="Export Output">
+        <button id="exportTxtBtn">Export as .txt</button>
+        <button id="exportCsvBtn">Export as .csv</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Made with 💚 by Samar- Let's Save Trees!
+  </footer>
+  
+  <textarea class="clipboard-helper" id="clipboardHelper"></textarea>
+
+  <script>
+    (function(){
+      // DOM Elements
+      const itemInput = document.getElementById('itemInput');
+      const outputArea = document.getElementById('outputArea');
+      const inputCountSummary = document.getElementById('inputCountSummary');
+      const outputCountSummary = document.getElementById('outputCountSummary');
+      const quoteCharInput = document.getElementById('quoteChar');
+      const delimiterInput = document.getElementById('delimiterChar');
+      const spaceAfterDelimiterCheckbox = document.getElementById('spaceAfterDelimiter');
+      const clipboardHelper = document.getElementById('clipboardHelper');
+
+      // Buttons
+      const clearInputBtn = document.getElementById('clearInputBtn');
+      const clearOutputBtn = document.getElementById('clearOutputBtn');
+      const formatBtn = document.getElementById('formatBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const exportTxtBtn = document.getElementById('exportTxtBtn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const darkToggleBtn = document.getElementById('darkToggleBtn');
+
+      let currentFormattedOutput = ''; 
+
+      // --- Utility Functions ---
+      function getCleanedInputItems() {
+        return itemInput.value.split(/\r?\n/)
+          .map(line => line.trim())
+          .filter(line => line !== '');
+      }
+      
+      function showButtonFeedback(button, message, type = 'success', duration = 2000) {
+          const originalText = button.innerHTML;
+          // Store original classes to restore them, except feedback ones
+          const originalClasses = Array.from(button.classList).filter(cls => cls !== 'success-feedback' && cls !== 'error-feedback').join(' ');
+
+
+          button.innerHTML = message;
+          button.className = originalClasses; // Reset to original classes first
+          
+          if (type === 'success') {
+              button.classList.add('success-feedback');
+          } else if (type === 'error') {
+              button.classList.add('error-feedback');
+          }
+          button.disabled = true;
+
+          setTimeout(() => {
+              button.innerHTML = originalText;
+              button.className = originalClasses; // Restore original classes
+              button.disabled = false;
+          }, duration);
+      }
+
+      // --- Core Logic Functions ---
+      function updateLiveInputCount() {
+        const items = getCleanedInputItems();
+        inputCountSummary.textContent = `Total Input Items: ${items.length}`;
+      }
+
+      function formatItems() {
+        const items = getCleanedInputItems();
+        
+        if (items.length === 0) {
+          currentFormattedOutput = '';
+          outputArea.value = 'Output will appear here...';
+          outputCountSummary.textContent = 'Total Output Items: 0';
+          updateLiveInputCount(); 
+          return;
+        }
+
+        const quoteChar = quoteCharInput.value.trim();
+        const delimiter = delimiterInput.value || ',';
+        const addSpaceAfterDelimiter = spaceAfterDelimiterCheckbox.checked;
+        
+        const joiner = addSpaceAfterDelimiter ? delimiter + ' ' : delimiter;
+
+        let formattedItemsArray;
+        if (quoteChar) {
+          const escapedQuoteRegex = new RegExp(quoteChar.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
+          formattedItemsArray = items.map(item => {
+            const safeItem = item.replace(escapedQuoteRegex, quoteChar + quoteChar);
+            return quoteChar + safeItem + quoteChar;
+          });
+        } else {
+          formattedItemsArray = items;
+        }
+        
+        currentFormattedOutput = formattedItemsArray.join(joiner);
+        outputArea.value = currentFormattedOutput;
+        outputCountSummary.textContent = `Total Output Items: ${items.length}`; 
+        updateLiveInputCount(); 
+      }
+
+      function copyToClipboard(text) {
+        if (!text || text === 'Output will appear here...') {
+          showButtonFeedback(copyBtn, 'Nothing to Copy! ❌', 'error');
+          return;
+        }
+        try {
+            clipboardHelper.value = text;
+            clipboardHelper.select();
+            clipboardHelper.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+            showButtonFeedback(copyBtn, 'Copied! ✅', 'success');
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            showButtonFeedback(copyBtn, 'Copy Failed! ☹️', 'error');
+        }
+      }
+      
+      function exportToFile(filename, content, contentType) {
+        if (!content || content === 'Output will appear here...') {
+          showButtonFeedback(filename.includes('.txt') ? exportTxtBtn : exportCsvBtn, 'Nothing to Export! ❌', 'error');
+          return;
+        }
+        const blob = new Blob([content], { type: contentType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a); 
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // --- Event Listeners ---
+      itemInput.addEventListener('input', updateLiveInputCount);
+
+      clearInputBtn.addEventListener('click', () => {
+        itemInput.value = '';
+        updateLiveInputCount(); 
+      });
+
+      clearOutputBtn.addEventListener('click', () => {
+        currentFormattedOutput = '';
+        outputArea.value = 'Output will appear here...';
+        outputCountSummary.textContent = 'Total Output Items: 0';
+      });
+
+      formatBtn.addEventListener('click', formatItems);
+
+      copyBtn.addEventListener('click', () => {
+        copyToClipboard(currentFormattedOutput);
+      });
+
+      exportTxtBtn.addEventListener('click', () => {
+        exportToFile('formatted_items.txt', currentFormattedOutput, 'text/plain;charset=utf-8');
+      });
+
+      exportCsvBtn.addEventListener('click', () => {
+        const items = getCleanedInputItems();
+        if (items.length === 0) {
+          showButtonFeedback(exportCsvBtn, 'Nothing to Export! ❌', 'error');
+          return;
+        }
+
+        const quoteChar = quoteCharInput.value.trim();
+        const delimiter = delimiterInput.value || ',';
+        
+        let csvContent;
+        if (quoteChar) {
+          const escapedQuoteRegex = new RegExp(quoteChar.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
+          csvContent = items.map(item => {
+            const safeItem = item.replace(escapedQuoteRegex, quoteChar + quoteChar);
+            return quoteChar + safeItem + quoteChar;
+          }).join(delimiter); 
+        } else {
+          csvContent = items.map(item => {
+            if (item.includes(delimiter) || item.includes('"') || item.includes('\n') || item.includes('\r')) {
+              return `"${item.replace(/"/g, '""')}"`;
+            }
+            return item;
+          }).join(delimiter);
+        }
+        exportToFile('formatted_items.csv', csvContent, 'text/csv;charset=utf-8');
+      });
+
+      darkToggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark');
+        darkToggleBtn.setAttribute('aria-pressed', String(isDark));
+        darkToggleBtn.textContent = isDark ? '☀️ Go Bright ' : '🌲 Go Green ';
+      });
+
+      // --- Initial Setup ---
+      updateLiveInputCount(); 
+      outputCountSummary.textContent = 'Total Output Items: 0'; 
+      
+      // Set initial theme based on user preference if available
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        if (!document.body.classList.contains('dark')) { 
+            document.body.classList.add('dark');
+            darkToggleBtn.setAttribute('aria-pressed', 'true');
+            darkToggleBtn.textContent = '☀️ Go Bright (Light)';
+        }
+      } else {
+         darkToggleBtn.textContent = '🌲 Go Green (Dark)';
+      }
+
+    })();
+  </script>
+</body>
+</html>
