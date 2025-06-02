@@ -568,22 +568,38 @@
         updateLiveInputCount(); 
       }
 
-      function copyToClipboard(text) {
-        if (!text || text === 'Output will appear here...') {
-          showButtonFeedback(copyBtn, 'Nothing to Copy! ❌', 'error');
-          return;
-        }
-        try {
-            clipboardHelper.value = text;
-            clipboardHelper.select();
-            clipboardHelper.setSelectionRange(0, 99999); // For mobile devices
-            document.execCommand('copy');
-            showButtonFeedback(copyBtn, 'Copied! ✅', 'success');
-        } catch (err) {
-            console.error('Fallback: Oops, unable to copy', err);
+function copyToClipboard(text) {
+    if (!text || text === 'Output will appear here...') {
+        showButtonFeedback(copyBtn, 'Nothing to Copy! ❌', 'error');
+        return;
+    }
+    try {
+        clipboardHelper.value = text; // Assign the full text to the helper textarea
+        clipboardHelper.focus();      // Ensure the textarea is focused
+        clipboardHelper.select();      // Selects all text in the helper textarea
+
+        // Explicitly set the selection range to the actual length of the text
+        // This ensures that the entire text is selected, regardless of its length.
+        clipboardHelper.setSelectionRange(0, text.length); 
+
+        document.execCommand('copy'); // Execute the copy command
+        showButtonFeedback(copyBtn, 'Copied! ✅', 'success');
+    } catch (err) {
+        console.error('Oops, unable to copy using execCommand:', err);
+        // Fallback or more robust error handling can be added here
+        // For instance, trying the newer navigator.clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showButtonFeedback(copyBtn, 'Copied! ✅ (async)', 'success');
+            }).catch(asyncErr => {
+                console.error('Async copy failed:', asyncErr);
+                showButtonFeedback(copyBtn, 'Copy Failed! ☹️', 'error');
+            });
+        } else {
             showButtonFeedback(copyBtn, 'Copy Failed! ☹️', 'error');
         }
-      }
+    }
+}
       
       function exportToFile(filename, content, contentType) {
         if (!content || content === 'Output will appear here...') {
